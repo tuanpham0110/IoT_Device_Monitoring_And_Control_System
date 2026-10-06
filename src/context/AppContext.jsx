@@ -7,81 +7,81 @@ const MAX_ROWS = 1500;
 const seed = seedSensorData();
 
 function readStoredUser() {
-  try {
-    return localStorage.getItem(AUTH_KEY) ? USER : null;
-  } catch {
-    return null;
-  }
+	try {
+		return localStorage.getItem(AUTH_KEY) ? USER : null;
+	} catch {
+		return null;
+	}
 }
 
 export function AppProvider({ children }) {
-  const [user, setUser] = useState(readStoredUser);
-  const [sensorData, setSensorData] = useState(seed.rows);
-  const [latest, setLatest] = useState(seed.last);
-  const [devices, setDevices] = useState(INITIAL_DEVICES);
-  const [actions, setActions] = useState(seedActions);
-  const [connected] = useState(true);
+	const [user, setUser] = useState(readStoredUser);
+	const [sensorData, setSensorData] = useState(seed.rows);
+	const [latest, setLatest] = useState(seed.last);
+	const [devices, setDevices] = useState(INITIAL_DEVICES);
+	const [actions, setActions] = useState(seedActions);
+	const [connected] = useState(true);
 
-  const latestRef = useRef(seed.last);
-  const devicesRef = useRef(INITIAL_DEVICES);
-  useEffect(() => { devicesRef.current = devices; }, [devices]);
+	const latestRef = useRef(seed.last);
+	const devicesRef = useRef(INITIAL_DEVICES);
+	useEffect(() => { devicesRef.current = devices; }, [devices]);
 
-  // Giả lập ESP32 gửi dữ liệu mỗi 3 giây (sau này thay bằng MQTT/WebSocket)
-  useEffect(() => {
-    const timer = setInterval(() => {
-      const prev = latestRef.current;
-      const next = { 1: nextValue(1, prev[1]), 2: nextValue(2, prev[2]), 3: nextValue(3, prev[3]) };
-      latestRef.current = next;
-      const now = formatTime(new Date());
-      setLatest(next);
-      setSensorData((rows) => {
-        let id = rows.length ? rows[rows.length - 1].id : 0;
-        const added = [1, 2, 3].map((sid) => ({ id: ++id, sensor_id: sid, value: next[sid], create_at: now }));
-        return [...rows, ...added].slice(-MAX_ROWS);
-      });
-    }, 3000);
-    return () => clearInterval(timer);
-  }, []);
+	// Giả lập ESP32 gửi dữ liệu mỗi 3 giây (sau này thay bằng MQTT/WebSocket)
+	useEffect(() => {
+		const timer = setInterval(() => {
+		const prev = latestRef.current;
+		const next = { 1: nextValue(1, prev[1]), 2: nextValue(2, prev[2]), 3: nextValue(3, prev[3]) };
+		latestRef.current = next;
+		const now = formatTime(new Date());
+		setLatest(next);
+		setSensorData((rows) => {
+			let id = rows.length ? rows[rows.length - 1].id : 0;
+			const added = [1, 2, 3].map((sid) => ({ id: ++id, sensor_id: sid, value: next[sid], create_at: now }));
+			return [...rows, ...added].slice(-MAX_ROWS);
+		});
+		}, 3000);
+		return () => clearInterval(timer);
+	}, []);
 
-  const login = useCallback((username, password) => {
-    if (username.trim() === USER.username && password === USER.password) {
-      setUser(USER);
-      try { localStorage.setItem(AUTH_KEY, '1'); } catch { /* bỏ qua */ }
-      return true;
-    }
-    return false;
-  }, []);
+	const login = useCallback((username, password) => {
+		if (username.trim() === USER.username && password === USER.password) {
+		setUser(USER);
+		try { localStorage.setItem(AUTH_KEY, '1'); } catch { /* bỏ qua */ }
+		return true;
+		}
+		return false;
+	}, []);
 
-  const logout = useCallback(() => {
-    setUser(null);
-    try { localStorage.removeItem(AUTH_KEY); } catch { /* bỏ qua */ }
-  }, []);
+	const logout = useCallback(() => {
+		setUser(null);
+		try { localStorage.removeItem(AUTH_KEY); } catch { /* bỏ qua */ }
+	}, []);
 
-  // Bật/tắt LED: gửi lệnh -> chờ ESP32 phản hồi -> cập nhật device.status và ghi log device_action
-  const toggleDevice = useCallback((deviceId) => {
-    const device = devicesRef.current.find((d) => d.id === deviceId);
-    if (!device || device.pending) return;
-    const target = device.status === 'ON' ? 'OFF' : 'ON';
-    setDevices((list) => list.map((d) => (d.id === deviceId ? { ...d, pending: true } : d)));
+	// Bật/tắt LED: gửi lệnh -> chờ ESP32 phản hồi -> cập nhật device.status và ghi log device_action
+	const toggleDevice = useCallback((deviceId) => {
+		const device = devicesRef.current.find((d) => d.id === deviceId);
+		if (!device || device.pending) return;
+		const target = device.status === 'ON' ? 'OFF' : 'ON';
+		setDevices((list) => list.map((d) => (d.id === deviceId ? { ...d, pending: true } : d)));
 
-    setTimeout(() => {
-      const ok = Math.random() > 0.1; // 10% thất bại để demo trạng thái failed
-      setDevices((list) => list.map((d) => (d.id === deviceId
-        ? { ...d, pending: false, status: ok ? target : d.status }
-        : d)));
-      setActions((list) => [...list, {
-        id: (list.length ? list[list.length - 1].id : 0) + 1,
-        device_id: deviceId, user_id: 1, action: target,
-        status: ok ? 'success' : 'failed', time: formatTime(new Date()),
-      }]);
-    }, 800);
-  }, []);
+		setTimeout(() => {
+		const ok = Math.random() > 0.1; // 10% thất bại để demo trạng thái failed
+		setDevices((list) => list.map((d) => (d.id === deviceId
+			? { ...d, pending: false, status: ok ? target : d.status }
+			: d)));
+		setActions((list) => [...list, {
+			id: (list.length ? list[list.length - 1].id : 0) + 1,
+			device_id: deviceId, user_id: 1, action: target,
+			status: ok ? 'success' : 'failed', time: formatTime(new Date()),
+		}]);
+		}, 800);
+	}, []);
 
-  return (
-    <AppContext.Provider value={{ user, login, logout, sensorData, latest, devices, actions, toggleDevice, connected }}>
-      {children}
-    </AppContext.Provider>
-  );
+	return (
+		<AppContext.Provider value={{ user, login, logout, sensorData, latest, devices, actions, toggleDevice, connected }}>
+		{children}
+		</AppContext.Provider>
+	);
 }
 
 export const useApp = () => useContext(AppContext);

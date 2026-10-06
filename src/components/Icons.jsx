@@ -11,8 +11,8 @@ export const IconSun = (p) => (<svg {...base} {...p}><circle cx="12" cy="12" r="
 export const IconBulb = (p) => (<svg {...base} {...p}><path d="M9 18h6M10 22h4" /><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z" /></svg>);
 export const IconLock = (p) => (<svg {...base} {...p}><rect x="4" y="11" width="16" height="10" rx="2" /><path d="M8 11V7a4 4 0 0 1 8 0v4" /></svg>);
 export const SortIcon = ({ dir }) => (
-  <svg width="8" height="10" viewBox="0 0 8 10" aria-hidden="true" className="sort-icon">
-    <path d="M4 0L8 4H0z" fill={dir === 'asc' ? 'var(--accent)' : 'currentColor'} opacity={dir === 'asc' ? 1 : 0.35} />
-    <path d="M4 10L0 6h8z" fill={dir === 'desc' ? 'var(--accent)' : 'currentColor'} opacity={dir === 'desc' ? 1 : 0.35} />
-  </svg>
+	<svg width="8" height="10" viewBox="0 0 8 10" aria-hidden="true" className="sort-icon">
+		<path d="M4 0L8 4H0z" fill={dir === 'asc' ? 'var(--accent)' : 'currentColor'} opacity={dir === 'asc' ? 1 : 0.35} />
+		<path d="M4 10L0 6h8z" fill={dir === 'desc' ? 'var(--accent)' : 'currentColor'} opacity={dir === 'desc' ? 1 : 0.35} />
+	</svg>
 );
