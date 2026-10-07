@@ -60,7 +60,7 @@ export default function Dashboard() {
 			<div className="side-col">
 			<div className="panel">
 				<div className="panel-head">
-				<h2>Trạng thái thiết bị</h2>
+				<h2>Điều khiển thiết bị</h2>
 				<span className="muted small mono">{onCount}/{devices.length} đang bật</span>
 				</div>
 				<div className="led-row">
@@ -69,23 +69,10 @@ export default function Dashboard() {
 					<div className="led-bulb"><IconBulb width={22} height={22} /></div>
 					<div className="led-name">{d.name}</div>
 					<div className="mono small led-state">{d.pending ? 'Đang gửi…' : d.status}</div>
+					<Toggle checked={d.status === 'ON'} pending={d.pending} onChange={() => toggleDevice(d.id)} label={`Bật tắt ${d.name}`} />
 					</div>
 				))}
 				</div>
-			</div>
-
-			<div className="panel">
-				<div className="panel-head"><h2>Điều khiển thiết bị</h2></div>
-				<ul className="control-list">
-				{devices.map((d) => (
-					<li key={d.id}>
-					<span className={`ctrl-icon ${d.status === 'ON' ? 'on' : ''}`}><IconBulb /></span>
-					<span className="mono">{d.name} (ID: {d.id})</span>
-					<span className="mono small muted ctrl-state">{d.pending ? '…' : d.status}</span>
-					<Toggle checked={d.status === 'ON'} pending={d.pending} onChange={() => toggleDevice(d.id)} label={`Bật tắt ${d.name}`} />
-					</li>
-				))}
-				</ul>
 				<p className="muted small note">Mỗi lần bật/tắt sẽ cập nhật bảng device và ghi log vào bảng device_action.</p>
 			</div>
 			</div>

@@ -5,6 +5,7 @@ const AppContext = createContext(null);
 const AUTH_KEY = 'iot_auth_user';
 const MAX_ROWS = 1500;
 const seed = seedSensorData();
+const seededActions = seedActions();
 
 function readStoredUser() {
 	try {
@@ -19,11 +20,12 @@ export function AppProvider({ children }) {
 	const [sensorData, setSensorData] = useState(seed.rows);
 	const [latest, setLatest] = useState(seed.last);
 	const [devices, setDevices] = useState(INITIAL_DEVICES);
-	const [actions, setActions] = useState(seedActions);
+	const [actions, setActions] = useState(seededActions);
 	const [connected] = useState(true);
 
 	const latestRef = useRef(seed.last);
 	const devicesRef = useRef(INITIAL_DEVICES);
+	const nextActionId = useRef(seededActions.length + 1);
 	useEffect(() => { devicesRef.current = devices; }, [devices]);
 
 	// Giả lập ESP32 gửi dữ liệu mỗi 3 giây (sau này thay bằng MQTT/WebSocket)
@@ -57,23 +59,26 @@ export function AppProvider({ children }) {
 		try { localStorage.removeItem(AUTH_KEY); } catch { /* bỏ qua */ }
 	}, []);
 
-	// Bật/tắt LED: gửi lệnh -> chờ ESP32 phản hồi -> cập nhật device.status và ghi log device_action
+	// Bật/tắt LED: ghi log 'loading' -> chờ ESP32 phản hồi -> cập nhật device.status và status của log
 	const toggleDevice = useCallback((deviceId) => {
 		const device = devicesRef.current.find((d) => d.id === deviceId);
 		if (!device || device.pending) return;
 		const target = device.status === 'ON' ? 'OFF' : 'ON';
+		const actionId = nextActionId.current++;
 		setDevices((list) => list.map((d) => (d.id === deviceId ? { ...d, pending: true } : d)));
+		setActions((list) => [...list, {
+			id: actionId, device_id: deviceId, user_id: 1, action: target,
+			status: 'loading', time: formatTime(new Date()),
+		}]);
 
 		setTimeout(() => {
-		const ok = Math.random() > 0.1; // 10% thất bại để demo trạng thái failed
-		setDevices((list) => list.map((d) => (d.id === deviceId
-			? { ...d, pending: false, status: ok ? target : d.status }
-			: d)));
-		setActions((list) => [...list, {
-			id: (list.length ? list[list.length - 1].id : 0) + 1,
-			device_id: deviceId, user_id: 1, action: target,
-			status: ok ? 'success' : 'failed', time: formatTime(new Date()),
-		}]);
+			const ok = Math.random() > 0.1; // 10% thất bại để demo trạng thái failed
+			setDevices((list) => list.map((d) => (d.id === deviceId
+				? { ...d, pending: false, status: ok ? target : d.status }
+				: d)));
+			setActions((list) => list.map((a) => (a.id === actionId
+				? { ...a, status: ok ? 'success' : 'failed' }
+				: a)));
 		}, 800);
 	}, []);
 

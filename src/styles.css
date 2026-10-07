@@ -11,8 +11,7 @@
   --green: #2dd4a0;
   --red: #ff6b6b;
   --radius: 6px;
-  --font: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  --mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', Consolas, monospace;
+  --font: 'Roboto', 'Segoe UI', Arial, sans-serif;
   box-sizing: border-box;
   padding-top: env(safe-area-inset-top, 0px);
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -71,7 +70,7 @@ a:hover {
 }
 
 .mono {
-  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
 }
 
 .muted {
@@ -141,7 +140,6 @@ a:hover {
 }
 
 .brand-name {
-  font-family: var(--mono);
   font-weight: 700;
   font-size: 15px;
 }
@@ -453,40 +451,15 @@ a:hover {
 
 .led-state {
   color: var(--muted);
-  margin-top: 2px;
+  margin: 2px 0 10px;
+}
+
+.led .toggle {
+  margin: 0 auto;
 }
 
 .led.on .led-state {
   color: var(--accent);
-}
-
-.control-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.control-list li {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 11px 0;
-  border-bottom: 1px solid var(--line);
-}
-
-.ctrl-icon {
-  color: var(--muted);
-  display: flex;
-}
-
-.ctrl-icon.on {
-  color: var(--accent);
-}
-
-.ctrl-state {
-  margin-left: auto;
-  min-width: 26px;
-  text-align: right;
 }
 
 .note {
@@ -673,7 +646,6 @@ a:hover {
 
 .badge {
   display: inline-block;
-  font-family: var(--mono);
   font-size: 11px;
   font-weight: 700;
   padding: 2px 8px;
@@ -683,6 +655,11 @@ a:hover {
 .badge.green {
   background: rgba(45, 212, 160, .14);
   color: var(--green);
+}
+
+.badge.yellow {
+  background: rgba(245, 165, 36, .14);
+  color: var(--accent);
 }
 
 .badge.red {
@@ -717,7 +694,6 @@ a:hover {
   border: 1px solid var(--line);
   background: var(--panel);
   cursor: pointer;
-  font-family: var(--mono);
   font-size: 12px;
 }
 
@@ -816,7 +792,6 @@ a:hover {
   border: 2px solid var(--accent);
   display: grid;
   place-items: center;
-  font-family: var(--mono);
   font-weight: 700;
   font-size: 24px;
   color: var(--accent);
@@ -1025,10 +1000,6 @@ a:hover {
     justify-content: center;
   }
 
-  .app.no-scroll .side-col .panel:last-child {
-    flex: none;
-  }
-
   .app.no-scroll .led-row {
     max-height: none;
     align-items: center;
@@ -1059,10 +1030,6 @@ a:hover {
     width: 36px;
     height: 36px;
     margin-bottom: 4px;
-  }
-
-  .app.no-scroll .control-list li {
-    padding: 7px 0;
   }
 
   .app.no-scroll .note {
