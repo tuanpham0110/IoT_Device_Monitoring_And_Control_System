@@ -1,9 +1,36 @@
 // Dữ liệu giả lập (mock). Khi có backend, thay các hàm trong AppContext bằng gọi API / MQTT.
 
 export const SENSORS = {
-	1: { name: 'Cảm biến nhiệt độ', short: 'Nhiệt độ', type: 'DHT22', unit: '°C', min: 24, max: 34, scale: 50, color: '#ff6b6b' },
-	2: { name: 'Cảm biến độ ẩm', short: 'Độ ẩm', type: 'DHT22', unit: '%', min: 60, max: 80, scale: 100, color: '#4cc9f0' },
-	3: { name: 'Cảm biến ánh sáng', short: 'Ánh sáng', type: 'LDR', unit: 'lux', min: 180, max: 320, scale: 1000, color: '#f5a524' },
+	1: {
+		name: 'Cảm biến nhiệt độ',
+		short: 'Nhiệt độ',
+		type: 'DHT22',
+		unit: '°C',
+		min: 24,
+		max: 34,
+		scale: 50,
+		color: '#ef4444',
+	},
+	2: {
+		name: 'Cảm biến độ ẩm',
+		short: 'Độ ẩm',
+		type: 'DHT22',
+		unit: '%',
+		min: 60,
+		max: 80,
+		scale: 100,
+		color: '#0ea5e9',
+	},
+	3: {
+		name: 'Cảm biến ánh sáng',
+		short: 'Ánh sáng',
+		type: 'LDR',
+		unit: 'lux',
+		min: 180,
+		max: 320,
+		scale: 1000,
+		color: '#f59e0b',
+	},
 };
 
 export const INITIAL_DEVICES = [
@@ -51,7 +78,12 @@ export function seedSensorData(rounds = 200) {
 	for (let r = 0; r < rounds; r++) {
 		for (const sid of [1, 2, 3]) {
 			last[sid] = nextValue(sid, last[sid]);
-			rows.push({ id: id++, sensor_id: sid, value: last[sid], create_at: formatTime(new Date(start + r * 3000)) });
+			rows.push({
+				id: id++,
+				sensor_id: sid,
+				value: last[sid],
+				create_at: formatTime(new Date(start + r * 3000)),
+			});
 		}
 	}
 	return { rows, last };
@@ -59,12 +91,22 @@ export function seedSensorData(rounds = 200) {
 
 export function seedActions() {
 	const plan = [
-		[2, 'ON', 'success'], [1, 'ON', 'success'], [1, 'OFF', 'success'], [3, 'ON', 'success'],
-		[3, 'OFF', 'success'], [2, 'OFF', 'failed'], [1, 'ON', 'success'], [1, 'OFF', 'success'],
+		[2, 'ON', 'success'],
+		[1, 'ON', 'success'],
+		[1, 'OFF', 'success'],
+		[3, 'ON', 'success'],
+		[3, 'OFF', 'success'],
+		[2, 'OFF', 'failed'],
+		[1, 'ON', 'success'],
+		[1, 'OFF', 'success'],
 	];
 	const start = Date.now() - 60 * 60 * 1000;
 	return plan.map(([device_id, action, status], i) => ({
-		id: i + 1, device_id, user_id: 1, action, status,
+		id: i + 1,
+		device_id,
+		user_id: 1,
+		action,
+		status,
 		time: formatTime(new Date(start + i * 5 * 60 * 1000)),
 	}));
 }

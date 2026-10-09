@@ -14,11 +14,38 @@ export default function Pagination({ page, totalPages, onChange }) {
 	if (totalPages <= 1) return null;
 	return (
 		<div className="pagination">
-		<button type="button" disabled={page === 1} onClick={() => onChange(page - 1)} aria-label="Trang trước">‹</button>
-		{pageList(page, totalPages).map((p) => (typeof p === 'number'
-			? <button type="button" key={p} className={p === page ? 'active' : ''} onClick={() => onChange(p)}>{p}</button>
-			: <span key={p} className="ellipsis">…</span>))}
-		<button type="button" disabled={page === totalPages} onClick={() => onChange(page + 1)} aria-label="Trang sau">›</button>
+			<button
+				type="button"
+				disabled={page === 1}
+				onClick={() => onChange(page - 1)}
+				aria-label="Trang trước"
+			>
+				‹
+			</button>
+			{pageList(page, totalPages).map((p) =>
+				typeof p === 'number' ? (
+					<button
+						type="button"
+						key={p}
+						className={p === page ? 'active' : ''}
+						onClick={() => onChange(p)}
+					>
+						{p}
+					</button>
+				) : (
+					<span key={p} className="ellipsis">
+						…
+					</span>
+				),
+			)}
+			<button
+				type="button"
+				disabled={page === totalPages}
+				onClick={() => onChange(page + 1)}
+				aria-label="Trang sau"
+			>
+				›
+			</button>
 		</div>
 	);
-	}
+}

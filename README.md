@@ -1,14 +1,17 @@
 # IoT Phòng thông minh (React + Vite)
 
 ## Chạy project
+
 ```bash
 npm install
 npm run dev      # mở http://localhost:5173
 npm run build    # build ra thư mục dist/
 ```
+
 Tài khoản demo: `tuan_admin` / `123456`
 
 ## Cấu trúc
+
 ```
 src/
   main.jsx, App.jsx          # điểm vào + định tuyến (HashRouter, chặn trang khi chưa đăng nhập)
@@ -21,7 +24,9 @@ src/
 ```
 
 ## Nối với backend thật
+
 Mọi dữ liệu đều đi qua `src/context/AppContext.jsx`, nên chỉ cần sửa file này:
+
 - `setInterval` giả lập ESP32 -> thay bằng MQTT qua WebSocket (`mqtt.js`) hoặc Socket.IO từ backend.
 - `toggleDevice` -> gọi API `POST /api/devices/:id/toggle`, chờ phản hồi rồi cập nhật trạng thái.
 - `login` -> gọi API `POST /api/auth/login`.
