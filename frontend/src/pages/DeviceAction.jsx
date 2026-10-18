@@ -1,6 +1,8 @@
 import { useMemo, useState } from 'react';
 import { useApp } from '../context/AppContext';
 import DataTable from '../components/DataTable';
+import TimeQueryHint from '../components/TimeQueryHint';
+import { matchesTime, parseTimeQuery } from '../data/timeQuery';
 
 const STATUS_COLOR = { success: 'green', failed: 'red', loading: 'yellow' };
 
@@ -48,17 +50,17 @@ export default function DeviceAction() {
 		[nameOf],
 	);
 
+	const timeQuery = useMemo(() => parseTimeQuery(time), [time]);
+
 	const filtered = useMemo(
 		() =>
 			actions.filter((r) => {
 				if (deviceId !== 'all' && r.device_id !== Number(deviceId)) return false;
 				if (action !== 'all' && r.action !== action) return false;
 				if (status !== 'all' && r.status !== status) return false;
-				const t = time.trim();
-				if (t && !r.time.includes(t)) return false;
-				return true;
+				return matchesTime(r.time, timeQuery);
 			}),
-		[actions, deviceId, action, status, time],
+		[actions, deviceId, action, status, timeQuery],
 	);
 
 	const reset = () => {
@@ -78,7 +80,7 @@ export default function DeviceAction() {
 					<input
 						value={time}
 						onChange={(e) => setTime(e.target.value)}
-						placeholder="Ví dụ 16:56 hoặc 2026-09-23"
+						placeholder="YYYY-MM-DD HH:mm:ss, ví dụ 2026-09-23 16:56"
 					/>
 				</label>
 				<label className="field">
@@ -113,6 +115,7 @@ export default function DeviceAction() {
 					Đặt lại
 				</button>
 				<span className="filters-count mono small muted">
+					<TimeQueryHint query={timeQuery} />
 					Tìm thấy {filtered.length} bản ghi
 				</span>
 			</div>

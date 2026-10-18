@@ -607,6 +607,10 @@ a:hover {
 	align-self: center;
 }
 
+.time-hint.error {
+	color: var(--red);
+}
+
 .table-wrap {
 	padding: 0;
 	overflow-x: auto;

@@ -1,0 +1,1134 @@
+{
+	"info": {
+		"_postman_id": "5b1f0f3e-2b7a-4c52-9a4e-1c3d9e7a8b10",
+		"name": "IoT Backend (ESP32 - MQTT)",
+		"description": "REST API của backend IoT. Đổi biến baseUrl nếu backend chạy ở máy/cổng khác.\n\nResponse chuẩn: { success, message, data, pagination? }",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:5000/api",
+			"type": "string"
+		}
+	],
+	"item": [
+		{
+			"name": "System",
+			"item": [
+				{
+					"name": "Health check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 200', () => pm.response.to.have.status(200));",
+									"pm.test('success = true', () => pm.expect(pm.response.json().success).to.eql(true));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/health",
+							"host": ["{{baseUrl}}"],
+							"path": ["health"]
+						},
+						"description": "Trạng thái kết nối MQTT và MySQL."
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/health",
+									"host": ["{{baseUrl}}"],
+									"path": ["health"]
+								},
+								"description": "Trạng thái kết nối MQTT và MySQL."
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": true,\n\t\"message\": \"OK\",\n\t\"data\": {\n\t\t\"uptime\": 13,\n\t\t\"mqtt\": true,\n\t\t\"database\": true\n\t}\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Device",
+			"item": [
+				{
+					"name": "Bật LED 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 200', () => pm.response.to.have.status(200));",
+									"pm.test('success = true', () => pm.expect(pm.response.json().success).to.eql(true));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/device/control",
+							"host": ["{{baseUrl}}"],
+							"path": ["device", "control"]
+						},
+						"description": "Publish lệnh lên device/control và chờ ESP32 phản hồi trên device/response (timeout mặc định 3s).\n\n200: ESP32 xác nhận thành công · 502: ESP32 báo lỗi / publish thất bại · 503: mất kết nối MQTT · 504: hết thời gian chờ · 409: thiết bị đang chờ lệnh trước.",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"deviceId\": 1,\n  \"state\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						}
+					},
+					"response": [
+						{
+							"name": "200 Thành công",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/device/control",
+									"host": ["{{baseUrl}}"],
+									"path": ["device", "control"]
+								},
+								"description": "Publish lệnh lên device/control và chờ ESP32 phản hồi trên device/response (timeout mặc định 3s).\n\n200: ESP32 xác nhận thành công · 502: ESP32 báo lỗi / publish thất bại · 503: mất kết nối MQTT · 504: hết thời gian chờ · 409: thiết bị đang chờ lệnh trước.",
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"deviceId\": 1,\n  \"state\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": true,\n\t\"message\": \"Đã cập nhật LED 1\",\n\t\"data\": {\n\t\t\"requestId\": \"b68f3580-f657-4eed-a9a9-346b1830c77b\",\n\t\t\"deviceId\": 1,\n\t\t\"requestedState\": true,\n\t\t\"actualState\": true,\n\t\t\"success\": true,\n\t\t\"message\": \"Đã cập nhật LED 1\",\n\t\t\"esp32Id\": \"ESP32-01\",\n\t\t\"actions\": [\n\t\t\t{\n\t\t\t\t\"id\": 1,\n\t\t\t\t\"requestId\": \"b68f3580-f657-4eed-a9a9-346b1830c77b\",\n\t\t\t\t\"userId\": null,\n\t\t\t\t\"deviceId\": 1,\n\t\t\t\t\"deviceName\": \"LED 1\",\n\t\t\t\t\"action\": \"ON\",\n\t\t\t\t\"status\": \"success\",\n\t\t\t\t\"timestamp\": \"2026-10-14 17:03:44\"\n\t\t\t}\n\t\t],\n\t\t\"devices\": [\n\t\t\t{\n\t\t\t\t\"deviceId\": 1,\n\t\t\t\t\"deviceKey\": \"led1\",\n\t\t\t\t\"name\": \"LED 1\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": true,\n\t\t\t\t\"status\": \"ON\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:44\",\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 2,\n\t\t\t\t\"deviceKey\": \"led2\",\n\t\t\t\t\"name\": \"LED 2\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": null,\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 3,\n\t\t\t\t\"deviceKey\": \"led3\",\n\t\t\t\t\"name\": \"LED 3\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": null,\n\t\t\t\t\"pending\": false\n\t\t\t}\n\t\t]\n\t}\n}"
+						},
+						{
+							"name": "504 ESP32 không phản hồi",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/device/control",
+									"host": ["{{baseUrl}}"],
+									"path": ["device", "control"]
+								},
+								"description": "Publish lệnh lên device/control và chờ ESP32 phản hồi trên device/response (timeout mặc định 3s).\n\n200: ESP32 xác nhận thành công · 502: ESP32 báo lỗi / publish thất bại · 503: mất kết nối MQTT · 504: hết thời gian chờ · 409: thiết bị đang chờ lệnh trước.",
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"deviceId\": 1,\n  \"state\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"status": "Gateway Timeout",
+							"code": 504,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": false,\n\t\"message\": \"ESP32 không phản hồi sau 3000ms\",\n\t\"data\": {\n\t\t\"requestId\": \"8b4679c0-f5ae-4ddb-8951-359a03bda2b3\",\n\t\t\"deviceId\": 1,\n\t\t\"requestedState\": true,\n\t\t\"actions\": [\n\t\t\t{\n\t\t\t\t\"id\": 11,\n\t\t\t\t\"requestId\": \"8b4679c0-f5ae-4ddb-8951-359a03bda2b3\",\n\t\t\t\t\"userId\": null,\n\t\t\t\t\"deviceId\": 1,\n\t\t\t\t\"deviceName\": \"LED 1\",\n\t\t\t\t\"action\": \"ON\",\n\t\t\t\t\"status\": \"failed\",\n\t\t\t\t\"timestamp\": \"2026-10-14 17:03:46\"\n\t\t\t}\n\t\t],\n\t\t\"devices\": [\n\t\t\t{\n\t\t\t\t\"deviceId\": 1,\n\t\t\t\t\"deviceKey\": \"led1\",\n\t\t\t\t\"name\": \"LED 1\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:46\",\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 2,\n\t\t\t\t\"deviceKey\": \"led2\",\n\t\t\t\t\"name\": \"LED 2\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:46\",\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 3,\n\t\t\t\t\"deviceKey\": \"led3\",\n\t\t\t\t\"name\": \"LED 3\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:46\",\n\t\t\t\t\"pending\": false\n\t\t\t}\n\t\t]\n\t}\n}"
+						}
+					]
+				},
+				{
+					"name": "Tắt LED 1",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 200', () => pm.response.to.have.status(200));",
+									"pm.test('success = true', () => pm.expect(pm.response.json().success).to.eql(true));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/device/control",
+							"host": ["{{baseUrl}}"],
+							"path": ["device", "control"]
+						},
+						"description": "",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"deviceId\": 1,\n  \"state\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/device/control",
+									"host": ["{{baseUrl}}"],
+									"path": ["device", "control"]
+								},
+								"description": "",
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"deviceId\": 1,\n  \"state\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": true,\n\t\"message\": \"Đã cập nhật LED 1\",\n\t\"data\": {\n\t\t\"requestId\": \"6053f903-e6d0-4b32-bd03-7483df8c1caf\",\n\t\t\"deviceId\": 1,\n\t\t\"requestedState\": false,\n\t\t\"actualState\": false,\n\t\t\"success\": true,\n\t\t\"message\": \"Đã cập nhật LED 1\",\n\t\t\"esp32Id\": \"ESP32-01\",\n\t\t\"actions\": [\n\t\t\t{\n\t\t\t\t\"id\": 2,\n\t\t\t\t\"requestId\": \"6053f903-e6d0-4b32-bd03-7483df8c1caf\",\n\t\t\t\t\"userId\": null,\n\t\t\t\t\"deviceId\": 1,\n\t\t\t\t\"deviceName\": \"LED 1\",\n\t\t\t\t\"action\": \"OFF\",\n\t\t\t\t\"status\": \"success\",\n\t\t\t\t\"timestamp\": \"2026-10-14 17:03:44\"\n\t\t\t}\n\t\t],\n\t\t\"devices\": [\n\t\t\t{\n\t\t\t\t\"deviceId\": 1,\n\t\t\t\t\"deviceKey\": \"led1\",\n\t\t\t\t\"name\": \"LED 1\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:45\",\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 2,\n\t\t\t\t\"deviceKey\": \"led2\",\n\t\t\t\t\"name\": \"LED 2\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": null,\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 3,\n\t\t\t\t\"deviceKey\": \"led3\",\n\t\t\t\t\"name\": \"LED 3\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": null,\n\t\t\t\t\"pending\": false\n\t\t\t}\n\t\t]\n\t}\n}"
+						}
+					]
+				},
+				{
+					"name": "Bật LED 2",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 200', () => pm.response.to.have.status(200));",
+									"pm.test('success = true', () => pm.expect(pm.response.json().success).to.eql(true));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/device/control",
+							"host": ["{{baseUrl}}"],
+							"path": ["device", "control"]
+						},
+						"description": "",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"deviceId\": 2,\n  \"state\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/device/control",
+									"host": ["{{baseUrl}}"],
+									"path": ["device", "control"]
+								},
+								"description": "",
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"deviceId\": 2,\n  \"state\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": true,\n\t\"message\": \"Đã cập nhật LED 2\",\n\t\"data\": {\n\t\t\"requestId\": \"d4639c4c-9699-401b-be91-1a4fd79d8ee1\",\n\t\t\"deviceId\": 2,\n\t\t\"requestedState\": true,\n\t\t\"actualState\": true,\n\t\t\"success\": true,\n\t\t\"message\": \"Đã cập nhật LED 2\",\n\t\t\"esp32Id\": \"ESP32-01\",\n\t\t\"actions\": [\n\t\t\t{\n\t\t\t\t\"id\": 3,\n\t\t\t\t\"requestId\": \"d4639c4c-9699-401b-be91-1a4fd79d8ee1\",\n\t\t\t\t\"userId\": null,\n\t\t\t\t\"deviceId\": 2,\n\t\t\t\t\"deviceName\": \"LED 2\",\n\t\t\t\t\"action\": \"ON\",\n\t\t\t\t\"status\": \"success\",\n\t\t\t\t\"timestamp\": \"2026-10-14 17:03:45\"\n\t\t\t}\n\t\t],\n\t\t\"devices\": [\n\t\t\t{\n\t\t\t\t\"deviceId\": 1,\n\t\t\t\t\"deviceKey\": \"led1\",\n\t\t\t\t\"name\": \"LED 1\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:45\",\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 2,\n\t\t\t\t\"deviceKey\": \"led2\",\n\t\t\t\t\"name\": \"LED 2\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": true,\n\t\t\t\t\"status\": \"ON\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:45\",\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 3,\n\t\t\t\t\"deviceKey\": \"led3\",\n\t\t\t\t\"name\": \"LED 3\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": null,\n\t\t\t\t\"pending\": false\n\t\t\t}\n\t\t]\n\t}\n}"
+						}
+					]
+				},
+				{
+					"name": "Bật LED 3",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 200', () => pm.response.to.have.status(200));",
+									"pm.test('success = true', () => pm.expect(pm.response.json().success).to.eql(true));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/device/control",
+							"host": ["{{baseUrl}}"],
+							"path": ["device", "control"]
+						},
+						"description": "",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"deviceId\": 3,\n  \"state\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/device/control",
+									"host": ["{{baseUrl}}"],
+									"path": ["device", "control"]
+								},
+								"description": "",
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"deviceId\": 3,\n  \"state\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": true,\n\t\"message\": \"Đã cập nhật LED 3\",\n\t\"data\": {\n\t\t\"requestId\": \"eedf73d8-9a6c-40c1-bbed-0d6afdb40202\",\n\t\t\"deviceId\": 3,\n\t\t\"requestedState\": true,\n\t\t\"actualState\": true,\n\t\t\"success\": true,\n\t\t\"message\": \"Đã cập nhật LED 3\",\n\t\t\"esp32Id\": \"ESP32-01\",\n\t\t\"actions\": [\n\t\t\t{\n\t\t\t\t\"id\": 4,\n\t\t\t\t\"requestId\": \"eedf73d8-9a6c-40c1-bbed-0d6afdb40202\",\n\t\t\t\t\"userId\": null,\n\t\t\t\t\"deviceId\": 3,\n\t\t\t\t\"deviceName\": \"LED 3\",\n\t\t\t\t\"action\": \"ON\",\n\t\t\t\t\"status\": \"success\",\n\t\t\t\t\"timestamp\": \"2026-10-14 17:03:45\"\n\t\t\t}\n\t\t],\n\t\t\"devices\": [\n\t\t\t{\n\t\t\t\t\"deviceId\": 1,\n\t\t\t\t\"deviceKey\": \"led1\",\n\t\t\t\t\"name\": \"LED 1\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:45\",\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 2,\n\t\t\t\t\"deviceKey\": \"led2\",\n\t\t\t\t\"name\": \"LED 2\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": true,\n\t\t\t\t\"status\": \"ON\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:45\",\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 3,\n\t\t\t\t\"deviceKey\": \"led3\",\n\t\t\t\t\"name\": \"LED 3\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": true,\n\t\t\t\t\"status\": \"ON\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:45\",\n\t\t\t\t\"pending\": false\n\t\t\t}\n\t\t]\n\t}\n}"
+						}
+					]
+				},
+				{
+					"name": "Bật tất cả đèn",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 200', () => pm.response.to.have.status(200));",
+									"pm.test('success = true', () => pm.expect(pm.response.json().success).to.eql(true));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/device/control",
+							"host": ["{{baseUrl}}"],
+							"path": ["device", "control"]
+						},
+						"description": "deviceId = 0 tác động lên cả 3 đèn.",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"deviceId\": 0,\n  \"state\": true\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/device/control",
+									"host": ["{{baseUrl}}"],
+									"path": ["device", "control"]
+								},
+								"description": "deviceId = 0 tác động lên cả 3 đèn.",
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"deviceId\": 0,\n  \"state\": true\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": true,\n\t\"message\": \"Đã cập nhật cả 3 đèn\",\n\t\"data\": {\n\t\t\"requestId\": \"de682fe1-3a27-4589-b513-695a2514505d\",\n\t\t\"deviceId\": 0,\n\t\t\"requestedState\": true,\n\t\t\"actualState\": true,\n\t\t\"success\": true,\n\t\t\"message\": \"Đã cập nhật cả 3 đèn\",\n\t\t\"esp32Id\": \"ESP32-01\",\n\t\t\"actions\": [\n\t\t\t{\n\t\t\t\t\"id\": 5,\n\t\t\t\t\"requestId\": \"de682fe1-3a27-4589-b513-695a2514505d\",\n\t\t\t\t\"userId\": null,\n\t\t\t\t\"deviceId\": 1,\n\t\t\t\t\"deviceName\": \"LED 1\",\n\t\t\t\t\"action\": \"ON\",\n\t\t\t\t\"status\": \"success\",\n\t\t\t\t\"timestamp\": \"2026-10-14 17:03:45\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"id\": 6,\n\t\t\t\t\"requestId\": \"de682fe1-3a27-4589-b513-695a2514505d\",\n\t\t\t\t\"userId\": null,\n\t\t\t\t\"deviceId\": 2,\n\t\t\t\t\"deviceName\": \"LED 2\",\n\t\t\t\t\"action\": \"ON\",\n\t\t\t\t\"status\": \"success\",\n\t\t\t\t\"timestamp\": \"2026-10-14 17:03:45\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"id\": 7,\n\t\t\t\t\"requestId\": \"de682fe1-3a27-4589-b513-695a2514505d\",\n\t\t\t\t\"userId\": null,\n\t\t\t\t\"deviceId\": 3,\n\t\t\t\t\"deviceName\": \"LED 3\",\n\t\t\t\t\"action\": \"ON\",\n\t\t\t\t\"status\": \"success\",\n\t\t\t\t\"timestamp\": \"2026-10-14 17:03:45\"\n\t\t\t}\n\t\t],\n\t\t\"devices\": [\n\t\t\t{\n\t\t\t\t\"deviceId\": 1,\n\t\t\t\t\"deviceKey\": \"led1\",\n\t\t\t\t\"name\": \"LED 1\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": true,\n\t\t\t\t\"status\": \"ON\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:46\",\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 2,\n\t\t\t\t\"deviceKey\": \"led2\",\n\t\t\t\t\"name\": \"LED 2\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": true,\n\t\t\t\t\"status\": \"ON\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:45\",\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 3,\n\t\t\t\t\"deviceKey\": \"led3\",\n\t\t\t\t\"name\": \"LED 3\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": true,\n\t\t\t\t\"status\": \"ON\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:45\",\n\t\t\t\t\"pending\": false\n\t\t\t}\n\t\t]\n\t}\n}"
+						}
+					]
+				},
+				{
+					"name": "Tắt tất cả đèn",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 200', () => pm.response.to.have.status(200));",
+									"pm.test('success = true', () => pm.expect(pm.response.json().success).to.eql(true));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/device/control",
+							"host": ["{{baseUrl}}"],
+							"path": ["device", "control"]
+						},
+						"description": "",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"deviceId\": 0,\n  \"state\": false\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						}
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/device/control",
+									"host": ["{{baseUrl}}"],
+									"path": ["device", "control"]
+								},
+								"description": "",
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"deviceId\": 0,\n  \"state\": false\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": true,\n\t\"message\": \"Đã cập nhật cả 3 đèn\",\n\t\"data\": {\n\t\t\"requestId\": \"8e351dcd-7b0d-4a4c-a959-373e211ba128\",\n\t\t\"deviceId\": 0,\n\t\t\"requestedState\": false,\n\t\t\"actualState\": false,\n\t\t\"success\": true,\n\t\t\"message\": \"Đã cập nhật cả 3 đèn\",\n\t\t\"esp32Id\": \"ESP32-01\",\n\t\t\"actions\": [\n\t\t\t{\n\t\t\t\t\"id\": 8,\n\t\t\t\t\"requestId\": \"8e351dcd-7b0d-4a4c-a959-373e211ba128\",\n\t\t\t\t\"userId\": null,\n\t\t\t\t\"deviceId\": 1,\n\t\t\t\t\"deviceName\": \"LED 1\",\n\t\t\t\t\"action\": \"OFF\",\n\t\t\t\t\"status\": \"success\",\n\t\t\t\t\"timestamp\": \"2026-10-14 17:03:46\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"id\": 9,\n\t\t\t\t\"requestId\": \"8e351dcd-7b0d-4a4c-a959-373e211ba128\",\n\t\t\t\t\"userId\": null,\n\t\t\t\t\"deviceId\": 2,\n\t\t\t\t\"deviceName\": \"LED 2\",\n\t\t\t\t\"action\": \"OFF\",\n\t\t\t\t\"status\": \"success\",\n\t\t\t\t\"timestamp\": \"2026-10-14 17:03:46\"\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"id\": 10,\n\t\t\t\t\"requestId\": \"8e351dcd-7b0d-4a4c-a959-373e211ba128\",\n\t\t\t\t\"userId\": null,\n\t\t\t\t\"deviceId\": 3,\n\t\t\t\t\"deviceName\": \"LED 3\",\n\t\t\t\t\"action\": \"OFF\",\n\t\t\t\t\"status\": \"success\",\n\t\t\t\t\"timestamp\": \"2026-10-14 17:03:46\"\n\t\t\t}\n\t\t],\n\t\t\"devices\": [\n\t\t\t{\n\t\t\t\t\"deviceId\": 1,\n\t\t\t\t\"deviceKey\": \"led1\",\n\t\t\t\t\"name\": \"LED 1\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:46\",\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 2,\n\t\t\t\t\"deviceKey\": \"led2\",\n\t\t\t\t\"name\": \"LED 2\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:46\",\n\t\t\t\t\"pending\": false\n\t\t\t},\n\t\t\t{\n\t\t\t\t\"deviceId\": 3,\n\t\t\t\t\"deviceKey\": \"led3\",\n\t\t\t\t\"name\": \"LED 3\",\n\t\t\t\t\"type\": \"LED\",\n\t\t\t\t\"state\": false,\n\t\t\t\t\"status\": \"OFF\",\n\t\t\t\t\"online\": true,\n\t\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\t\"lastChanged\": \"2026-10-14 17:03:46\",\n\t\t\t\t\"pending\": false\n\t\t\t}\n\t\t]\n\t}\n}"
+						}
+					]
+				},
+				{
+					"name": "Lỗi: body không hợp lệ",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 400', () => pm.response.to.have.status(400));",
+									"pm.test('success = false', () => pm.expect(pm.response.json().success).to.eql(false));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/device/control",
+							"host": ["{{baseUrl}}"],
+							"path": ["device", "control"]
+						},
+						"description": "Kiểm tra validate, mong đợi 400.",
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"deviceId\": 5,\n  \"state\": \"on\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						}
+					},
+					"response": [
+						{
+							"name": "400 Bad Request",
+							"originalRequest": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "Content-Type",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/device/control",
+									"host": ["{{baseUrl}}"],
+									"path": ["device", "control"]
+								},
+								"description": "Kiểm tra validate, mong đợi 400.",
+								"body": {
+									"mode": "raw",
+									"raw": "{\n  \"deviceId\": 5,\n  \"state\": \"on\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								}
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": false,\n\t\"message\": \"deviceId phải là số nguyên 0, 1, 2 hoặc 3 (0 = tất cả đèn)\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Trạng thái 3 đèn",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 200', () => pm.response.to.have.status(200));",
+									"pm.test('success = true', () => pm.expect(pm.response.json().success).to.eql(true));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/device/status",
+							"host": ["{{baseUrl}}"],
+							"path": ["device", "status"]
+						},
+						"description": "Trạng thái hiện tại của LED1-LED3 (state, status ON/OFF, pending)."
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/device/status",
+									"host": ["{{baseUrl}}"],
+									"path": ["device", "status"]
+								},
+								"description": "Trạng thái hiện tại của LED1-LED3 (state, status ON/OFF, pending)."
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": true,\n\t\"message\": \"OK\",\n\t\"data\": [\n\t\t{\n\t\t\t\"deviceId\": 1,\n\t\t\t\"deviceKey\": \"led1\",\n\t\t\t\"name\": \"LED 1\",\n\t\t\t\"type\": \"LED\",\n\t\t\t\"state\": false,\n\t\t\t\"status\": \"OFF\",\n\t\t\t\"online\": true,\n\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\"lastChanged\": \"2026-10-14 17:03:46\",\n\t\t\t\"pending\": false\n\t\t},\n\t\t{\n\t\t\t\"deviceId\": 2,\n\t\t\t\"deviceKey\": \"led2\",\n\t\t\t\"name\": \"LED 2\",\n\t\t\t\"type\": \"LED\",\n\t\t\t\"state\": false,\n\t\t\t\"status\": \"OFF\",\n\t\t\t\"online\": true,\n\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\"lastChanged\": \"2026-10-14 17:03:46\",\n\t\t\t\"pending\": false\n\t\t},\n\t\t{\n\t\t\t\"deviceId\": 3,\n\t\t\t\"deviceKey\": \"led3\",\n\t\t\t\"name\": \"LED 3\",\n\t\t\t\"type\": \"LED\",\n\t\t\t\"state\": false,\n\t\t\t\"status\": \"OFF\",\n\t\t\t\"online\": true,\n\t\t\t\"location\": \"Phòng thí nghiệm\",\n\t\t\t\"lastChanged\": \"2026-10-14 17:03:46\",\n\t\t\t\"pending\": false\n\t\t}\n\t]\n}"
+						}
+					]
+				},
+				{
+					"name": "Lịch sử điều khiển",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 200', () => pm.response.to.have.status(200));",
+									"pm.test('success = true', () => pm.expect(pm.response.json().success).to.eql(true));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/device/actions?page=1&limit=20",
+							"host": ["{{baseUrl}}"],
+							"path": ["device", "actions"],
+							"query": [
+								{
+									"key": "page",
+									"value": "1",
+									"description": ""
+								},
+								{
+									"key": "limit",
+									"value": "20",
+									"description": ""
+								}
+							]
+						},
+						"description": "Bảng action_log: mỗi lệnh kèm trạng thái loading, success, failed."
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/device/actions?page=1&limit=20",
+									"host": ["{{baseUrl}}"],
+									"path": ["device", "actions"],
+									"query": [
+										{
+											"key": "page",
+											"value": "1",
+											"description": ""
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"description": ""
+										}
+									]
+								},
+								"description": "Bảng action_log: mỗi lệnh kèm trạng thái loading, success, failed."
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": true,\n\t\"message\": \"OK\",\n\t\"data\": [\n\t\t{\n\t\t\t\"id\": 10,\n\t\t\t\"requestId\": \"8e351dcd-7b0d-4a4c-a959-373e211ba128\",\n\t\t\t\"userId\": null,\n\t\t\t\"deviceId\": 3,\n\t\t\t\"deviceName\": \"LED 3\",\n\t\t\t\"action\": \"OFF\",\n\t\t\t\"status\": \"success\",\n\t\t\t\"timestamp\": \"2026-10-14 17:03:46\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 9,\n\t\t\t\"requestId\": \"8e351dcd-7b0d-4a4c-a959-373e211ba128\",\n\t\t\t\"userId\": null,\n\t\t\t\"deviceId\": 2,\n\t\t\t\"deviceName\": \"LED 2\",\n\t\t\t\"action\": \"OFF\",\n\t\t\t\"status\": \"success\",\n\t\t\t\"timestamp\": \"2026-10-14 17:03:46\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 8,\n\t\t\t\"requestId\": \"8e351dcd-7b0d-4a4c-a959-373e211ba128\",\n\t\t\t\"userId\": null,\n\t\t\t\"deviceId\": 1,\n\t\t\t\"deviceName\": \"LED 1\",\n\t\t\t\"action\": \"OFF\",\n\t\t\t\"status\": \"success\",\n\t\t\t\"timestamp\": \"2026-10-14 17:03:46\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 7,\n\t\t\t\"requestId\": \"de682fe1-3a27-4589-b513-695a2514505d\",\n\t\t\t\"userId\": null,\n\t\t\t\"deviceId\": 3,\n\t\t\t\"deviceName\": \"LED 3\",\n\t\t\t\"action\": \"ON\",\n\t\t\t\"status\": \"success\",\n\t\t\t\"timestamp\": \"2026-10-14 17:03:45\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 6,\n\t\t\t\"requestId\": \"de682fe1-3a27-4589-b513-695a2514505d\",\n\t\t\t\"userId\": null,\n\t\t\t\"deviceId\": 2,\n\t\t\t\"deviceName\": \"LED 2\",\n\t\t\t\"action\": \"ON\",\n\t\t\t\"status\": \"success\",\n\t\t\t\"timestamp\": \"2026-10-14 17:03:45\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 5,\n\t\t\t\"requestId\": \"de682fe1-3a27-4589-b513-695a2514505d\",\n\t\t\t\"userId\": null,\n\t\t\t\"deviceId\": 1,\n\t\t\t\"deviceName\": \"LED 1\",\n\t\t\t\"action\": \"ON\",\n\t\t\t\"status\": \"success\",\n\t\t\t\"timestamp\": \"2026-10-14 17:03:45\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 4,\n\t\t\t\"requestId\": \"eedf73d8-9a6c-40c1-bbed-0d6afdb40202\",\n\t\t\t\"userId\": null,\n\t\t\t\"deviceId\": 3,\n\t\t\t\"deviceName\": \"LED 3\",\n\t\t\t\"action\": \"ON\",\n\t\t\t\"status\": \"success\",\n\t\t\t\"timestamp\": \"2026-10-14 17:03:45\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 3,\n\t\t\t\"requestId\": \"d4639c4c-9699-401b-be91-1a4fd79d8ee1\",\n\t\t\t\"userId\": null,\n\t\t\t\"deviceId\": 2,\n\t\t\t\"deviceName\": \"LED 2\",\n\t\t\t\"action\": \"ON\",\n\t\t\t\"status\": \"success\",\n\t\t\t\"timestamp\": \"2026-10-14 17:03:45\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 2,\n\t\t\t\"requestId\": \"6053f903-e6d0-4b32-bd03-7483df8c1caf\",\n\t\t\t\"userId\": null,\n\t\t\t\"deviceId\": 1,\n\t\t\t\"deviceName\": \"LED 1\",\n\t\t\t\"action\": \"OFF\",\n\t\t\t\"status\": \"success\",\n\t\t\t\"timestamp\": \"2026-10-14 17:03:44\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 1,\n\t\t\t\"requestId\": \"b68f3580-f657-4eed-a9a9-346b1830c77b\",\n\t\t\t\"userId\": null,\n\t\t\t\"deviceId\": 1,\n\t\t\t\"deviceName\": \"LED 1\",\n\t\t\t\"action\": \"ON\",\n\t\t\t\"status\": \"success\",\n\t\t\t\"timestamp\": \"2026-10-14 17:03:44\"\n\t\t}\n\t],\n\t\"pagination\": {\n\t\t\"page\": 1,\n\t\t\"limit\": 20,\n\t\t\"total\": 10,\n\t\t\"totalPages\": 1\n\t}\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Sensors",
+			"item": [
+				{
+					"name": "Dữ liệu mới nhất",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 200', () => pm.response.to.have.status(200));",
+									"pm.test('success = true', () => pm.expect(pm.response.json().success).to.eql(true));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/sensors/latest",
+							"host": ["{{baseUrl}}"],
+							"path": ["sensors", "latest"],
+							"query": [
+								{
+									"key": "sensorKey",
+									"value": "ESP32-01",
+									"description": "Lọc theo ESP32 (tuỳ chọn)",
+									"disabled": true
+								}
+							]
+						},
+						"description": "Bản ghi nhiệt độ, độ ẩm, ánh sáng mới nhất."
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/sensors/latest",
+									"host": ["{{baseUrl}}"],
+									"path": ["sensors", "latest"],
+									"query": [
+										{
+											"key": "sensorKey",
+											"value": "ESP32-01",
+											"description": "Lọc theo ESP32 (tuỳ chọn)",
+											"disabled": true
+										}
+									]
+								},
+								"description": "Bản ghi nhiệt độ, độ ẩm, ánh sáng mới nhất."
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": true,\n\t\"message\": \"OK\",\n\t\"data\": {\n\t\t\"id\": 15,\n\t\t\"sensorId\": 1,\n\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\"temperature\": 26.6,\n\t\t\"humidity\": 65.5,\n\t\t\"light\": 278,\n\t\t\"timestamp\": \"2026-10-14 17:03:46\",\n\t\t\"tempStatus\": \"NORMAL\",\n\t\t\"humidStatus\": \"NORMAL\",\n\t\t\"lightStatus\": \"NORMAL\"\n\t}\n}"
+						}
+					]
+				},
+				{
+					"name": "Lịch sử (phân trang)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 200', () => pm.response.to.have.status(200));",
+									"pm.test('success = true', () => pm.expect(pm.response.json().success).to.eql(true));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/sensors/history?limit=20&page=1",
+							"host": ["{{baseUrl}}"],
+							"path": ["sensors", "history"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "20",
+									"description": "1-500"
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": "Bắt đầu từ 1"
+								}
+							]
+						},
+						"description": "Mặc định mới nhất trước (order=desc)."
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/sensors/history?limit=20&page=1",
+									"host": ["{{baseUrl}}"],
+									"path": ["sensors", "history"],
+									"query": [
+										{
+											"key": "limit",
+											"value": "20",
+											"description": "1-500"
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"description": "Bắt đầu từ 1"
+										}
+									]
+								},
+								"description": "Mặc định mới nhất trước (order=desc)."
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": true,\n\t\"message\": \"OK\",\n\t\"data\": [\n\t\t{\n\t\t\t\"id\": 15,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 26.6,\n\t\t\t\"humidity\": 65.5,\n\t\t\t\"light\": 278,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:46\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 14,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 26.5,\n\t\t\t\"humidity\": 65.2,\n\t\t\t\"light\": 266,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:45\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 13,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 26.6,\n\t\t\t\"humidity\": 65,\n\t\t\t\"light\": 249,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:44\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 12,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 26.9,\n\t\t\t\"humidity\": 65,\n\t\t\t\"light\": 229,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:43\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 11,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 27.2,\n\t\t\t\"humidity\": 65.2,\n\t\t\t\"light\": 212,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:42\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 10,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 27.7,\n\t\t\t\"humidity\": 65.6,\n\t\t\t\"light\": 202,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:41\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 9,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 28.2,\n\t\t\t\"humidity\": 66.1,\n\t\t\t\"light\": 201,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:40\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 8,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 28.7,\n\t\t\t\"humidity\": 66.8,\n\t\t\t\"light\": 210,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:39\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 7,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 29.1,\n\t\t\t\"humidity\": 67.5,\n\t\t\t\"light\": 226,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:38\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 6,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 29.4,\n\t\t\t\"humidity\": 68.2,\n\t\t\t\"light\": 246,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:37\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 5,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 29.5,\n\t\t\t\"humidity\": 68.9,\n\t\t\t\"light\": 264,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:36\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 4,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 29.5,\n\t\t\t\"humidity\": 69.6,\n\t\t\t\"light\": 276,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:35\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 3,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 29.3,\n\t\t\t\"humidity\": 70.2,\n\t\t\t\"light\": 280,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:34\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 2,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 28.9,\n\t\t\t\"humidity\": 70.6,\n\t\t\t\"light\": 274,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:33\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 1,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 28.5,\n\t\t\t\"humidity\": 70.9,\n\t\t\t\"light\": 259,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:32\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t}\n\t],\n\t\"pagination\": {\n\t\t\"page\": 1,\n\t\t\"limit\": 20,\n\t\t\"total\": 15,\n\t\t\"totalPages\": 1\n\t}\n}"
+						}
+					]
+				},
+				{
+					"name": "Lịch sử theo khoảng thời gian (vẽ biểu đồ)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 200', () => pm.response.to.have.status(200));",
+									"pm.test('success = true', () => pm.expect(pm.response.json().success).to.eql(true));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/sensors/history?limit=5&page=1&from=2026-10-14 00:00:00&to=2026-10-14 23:59:59&order=asc",
+							"host": ["{{baseUrl}}"],
+							"path": ["sensors", "history"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "5",
+									"description": ""
+								},
+								{
+									"key": "page",
+									"value": "1",
+									"description": ""
+								},
+								{
+									"key": "from",
+									"value": "2026-10-14 00:00:00",
+									"description": "YYYY-MM-DD HH:mm:ss hoặc ISO 8601"
+								},
+								{
+									"key": "to",
+									"value": "2026-10-14 23:59:59",
+									"description": ""
+								},
+								{
+									"key": "order",
+									"value": "asc",
+									"description": "asc: cũ -> mới, tiện vẽ biểu đồ"
+								},
+								{
+									"key": "sensorKey",
+									"value": "ESP32-01",
+									"description": "Mã node ESP32 (bảng sensor)",
+									"disabled": true
+								}
+							]
+						},
+						"description": ""
+					},
+					"response": [
+						{
+							"name": "200 OK",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/sensors/history?limit=5&page=1&from=2026-10-14 00:00:00&to=2026-10-14 23:59:59&order=asc",
+									"host": ["{{baseUrl}}"],
+									"path": ["sensors", "history"],
+									"query": [
+										{
+											"key": "limit",
+											"value": "5",
+											"description": ""
+										},
+										{
+											"key": "page",
+											"value": "1",
+											"description": ""
+										},
+										{
+											"key": "from",
+											"value": "2026-10-14 00:00:00",
+											"description": "YYYY-MM-DD HH:mm:ss hoặc ISO 8601"
+										},
+										{
+											"key": "to",
+											"value": "2026-10-14 23:59:59",
+											"description": ""
+										},
+										{
+											"key": "order",
+											"value": "asc",
+											"description": "asc: cũ -> mới, tiện vẽ biểu đồ"
+										},
+										{
+											"key": "sensorKey",
+											"value": "ESP32-01",
+											"description": "Mã node ESP32 (bảng sensor)",
+											"disabled": true
+										}
+									]
+								},
+								"description": ""
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": true,\n\t\"message\": \"OK\",\n\t\"data\": [\n\t\t{\n\t\t\t\"id\": 11,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 27.2,\n\t\t\t\"humidity\": 65.2,\n\t\t\t\"light\": 212,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:42\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 12,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 26.9,\n\t\t\t\"humidity\": 65,\n\t\t\t\"light\": 229,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:43\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 13,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 26.6,\n\t\t\t\"humidity\": 65,\n\t\t\t\"light\": 249,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:44\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 14,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 26.5,\n\t\t\t\"humidity\": 65.2,\n\t\t\t\"light\": 266,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:45\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t},\n\t\t{\n\t\t\t\"id\": 15,\n\t\t\t\"sensorId\": 1,\n\t\t\t\"sensorKey\": \"ESP32-01\",\n\t\t\t\"temperature\": 26.6,\n\t\t\t\"humidity\": 65.5,\n\t\t\t\"light\": 278,\n\t\t\t\"timestamp\": \"2026-10-14 17:03:46\",\n\t\t\t\"tempStatus\": \"NORMAL\",\n\t\t\t\"humidStatus\": \"NORMAL\",\n\t\t\t\"lightStatus\": \"NORMAL\"\n\t\t}\n\t],\n\t\"pagination\": {\n\t\t\"page\": 1,\n\t\t\"limit\": 5,\n\t\t\"total\": 15,\n\t\t\"totalPages\": 3\n\t}\n}"
+						}
+					]
+				},
+				{
+					"name": "Lỗi: tham số phân trang sai",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"type": "text/javascript",
+								"exec": [
+									"pm.test('Status code 400', () => pm.response.to.have.status(400));",
+									"pm.test('success = false', () => pm.expect(pm.response.json().success).to.eql(false));"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{baseUrl}}/sensors/history?limit=0&page=-1",
+							"host": ["{{baseUrl}}"],
+							"path": ["sensors", "history"],
+							"query": [
+								{
+									"key": "limit",
+									"value": "0",
+									"description": ""
+								},
+								{
+									"key": "page",
+									"value": "-1",
+									"description": ""
+								}
+							]
+						},
+						"description": "Mong đợi 400."
+					},
+					"response": [
+						{
+							"name": "400 Bad Request",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/sensors/history?limit=0&page=-1",
+									"host": ["{{baseUrl}}"],
+									"path": ["sensors", "history"],
+									"query": [
+										{
+											"key": "limit",
+											"value": "0",
+											"description": ""
+										},
+										{
+											"key": "page",
+											"value": "-1",
+											"description": ""
+										}
+									]
+								},
+								"description": "Mong đợi 400."
+							},
+							"status": "Bad Request",
+							"code": 400,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								}
+							],
+							"cookie": [],
+							"body": "{\n\t\"success\": false,\n\t\"message\": \"page phải là số nguyên >= 1\"\n}"
+						}
+					]
+				}
+			]
+		}
+	]
+}
