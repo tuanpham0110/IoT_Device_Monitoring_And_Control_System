@@ -58,7 +58,7 @@ export default function Dashboard() {
 				<div className="panel chart-panel">
 					<div className="panel-head">
 						<h2>Biểu đồ cảm biến theo thời gian thực</h2>
-						<span className="muted small mono">Cập nhật mỗi 3 giây</span>
+						<span className="muted small mono">Cập nhật mỗi 5 giây</span>
 					</div>
 					<div className="chart-box">
 						<ResponsiveContainer width="100%" height="100%">
@@ -87,7 +87,7 @@ export default function Dashboard() {
 									tick={{ fill: '#64748b', fontSize: 11 }}
 									tickLine={false}
 									axisLine={false}
-									domain={[0, 400]}
+									domain={[0, SENSORS[3].scale]}
 								/>
 								<Tooltip content={<ChartTooltip />} />
 								<Legend wrapperStyle={{ fontSize: 12 }} />
@@ -115,7 +115,7 @@ export default function Dashboard() {
 									yAxisId="right"
 									type="monotone"
 									dataKey="s3"
-									name="Ánh sáng (lux)"
+									name="Ánh sáng (ADC)"
 									stroke={SENSORS[3].color}
 									strokeWidth={2}
 									dot={false}

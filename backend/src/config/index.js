@@ -28,7 +28,7 @@ export const config = {
 	// Không nhận được message nào từ ESP32 sau khoảng này thì coi thiết bị offline
 	offlineAfterMs: toInt(process.env.OFFLINE_AFTER_MS, 15000),
 	mqtt: {
-		host: process.env.MQTT_HOST || '10.0.84.106',
+		host: process.env.MQTT_HOST || '127.0.0.1',
 		port: toInt(process.env.MQTT_PORT, 1889),
 		username: process.env.MQTT_USERNAME || '',
 		password: process.env.MQTT_PASSWORD || '',

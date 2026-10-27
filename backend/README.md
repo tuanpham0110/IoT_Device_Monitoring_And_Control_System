@@ -46,7 +46,9 @@ cp .env.example .env      # rồi điền DB_PASSWORD, MQTT_PASSWORD...
 npm run dev               # hoặc: npm start
 ```
 
-Máy chạy backend phải truy cập được broker `10.0.84.106:1889` (cùng mạng LAN với ESP32).
+Máy chạy backend phải truy cập được broker MQTT (`MQTT_HOST:MQTT_PORT`). Nếu broker chạy cùng máy với backend thì để `MQTT_HOST=127.0.0.1`; ESP32 vẫn dùng IP LAN của máy đó.
+
+Sau khi build Frontend (`cd frontend && npm run build`), backend phục vụ luôn giao diện tại `http://localhost:5000`.
 
 ## REST API
 

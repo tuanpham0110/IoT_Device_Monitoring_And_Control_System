@@ -8,6 +8,8 @@ import { ApiError } from '../utils/ApiError.js';
 
 const { ACTION_STATUS } = ActionLog;
 const ALL_DEVICE_IDS = config.deviceIds;
+// message ESP32 gửi kèm requestId "INIT" khi vừa kết nối MQTT
+const INITIAL_STATE_MESSAGE = 'INITIAL_STATE';
 
 // requestId -> { deviceIds, timer, resolve } của các lệnh đang chờ ESP32 phản hồi
 const pending = new Map();
@@ -154,9 +156,20 @@ function parseResponsePayload(payload) {
 	};
 }
 
+// ESP32 gửi trạng thái từng đèn mỗi khi (re)connect MQTT: chỉ đồng bộ DB, không phải lệnh điều khiển
+async function syncInitialState(res) {
+	lastSeen = Date.now();
+	online = true;
+	await Device.updateStatus(targetsOf(res.deviceId), res.actualState);
+	console.log(`[ESP32] Trạng thái ban đầu device ${res.deviceId}: ${res.actualState}`);
+	await broadcastStatus();
+}
+
 // Gọi khi nhận message trên topic device/response
 export async function handleDeviceResponse(payload) {
 	const res = parseResponsePayload(payload);
+	if (res.message === INITIAL_STATE_MESSAGE) return syncInitialState(res);
+
 	const entry = pending.get(res.requestId);
 	if (entry) {
 		clearTimeout(entry.timer);
